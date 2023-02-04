@@ -1,4 +1,79 @@
 {% extends "base.html" %}
 {% block content %}
-    <p>Your book here</p>
+<div class="container">
+    <div class="top_section">
+        <div class="top_item">
+            <div class="d-flex justify-content-center" style="width: 100%;">
+                <div class="book-cover" style="height: 140px; width: 99px; overflow: hidden; border-radius: 8px;">
+                    <div style="height: 100%; width: 100%; background-color: gray;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="top_item">
+            <h2>{{book.title}}</h2>
+            <p>{{ book.author }} ({{ book.year }}) </p>
+            <p>{{ book.edition }} - {{ book.collection }}</p>
+            <p>{{ book.synopsis }}</p>
+        </div>
+    </div>
+    <div class="">
+        <div>
+            <h2>Availabilities</h2>
+            {% if availabilities %}
+            <div>
+                <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th scope="col">Library</th>
+                        <th scope="col">Zone</th>
+                        <th scope="col">Units</th>
+                        <th scope="col">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for bookAvailable in availabilities %}
+                            <tr class="table-active">
+                                <th scope="row">{{ bookAvailable.library.name }}</th>
+                                <td>{{ bookAvailable.library.city }} {{ bookAvailable.library.zipcode }}</td>
+                                <td>x{{ bookAvailable.stock }}</td>
+                                <td>
+                                    <a  href="{% url 'library:book_reference' book.id %}"
+                                        type="button"
+                                        class="btn btn-info"
+                                    >
+                                        Borrow this book
+                                    </a>
+                                    <a  href="{% url 'library:book_reference' book.id %}"
+                                        type="button"
+                                        class="btn btn-info"
+                                    >
+                                        Visit this library
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p>This book is unfortunately unavailable.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+    <style>
+        .top_section{
+            width: 100%;
+            display: flex;
+            gap: 50px;
+        }
+    
+        .top_item{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+
+        }
+    </style>
 {% endblock content %}
