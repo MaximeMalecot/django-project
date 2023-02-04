@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import views
 
+app_name = 'library'
 urlpatterns = [
-    path('books', views.library_books, name='library_books'),
+    path('', views.books, name='books'),
 ]
