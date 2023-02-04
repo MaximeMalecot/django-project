@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="container">
     <h2>Our books</h2>
     {% if books %}
-        <div class="container d-inline-flex p-2" style="gap: 15px;">
+        <div class="d-inline-flex p-2" style="gap: 15px;">
             {% for book in books %}
                     <div class="book-item d-flex flex-column" style="cursor: pointer; border: 1px solid gray; border-radius: 5px; padding: 10px;">
                         <div class="d-flex justify-content-center" style="width: 100%;">
@@ -20,4 +21,5 @@
     {% else %}
         <p>No books are available.</p>
     {% endif %} 
+</div>
 {% endblock content %}

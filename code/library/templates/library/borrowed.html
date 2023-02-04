@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Your book {{ book.reference.name }} has been successfuly reserved !</h2>
+    <p>You can now go to the library {{ book.library.name }} to collect your book</p>
+</div>
+{% endblock content %}

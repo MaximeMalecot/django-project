@@ -37,12 +37,17 @@
                                 <td>{{ bookAvailable.library.city }} {{ bookAvailable.library.zipcode }}</td>
                                 <td>x{{ bookAvailable.stock }}</td>
                                 <td>
-                                    <a  href="{% url 'library:book_reference' book.id %}"
-                                        type="button"
-                                        class="btn btn-info"
-                                    >
-                                        Borrow this book
-                                    </a>
+                                    <form action="{% url 'library:borrow_book' bookAvailable.id %}" method="post">
+                                        {% csrf_token %}
+                                        <fieldset>
+                                            <input
+                                                type="submit"
+                                                class="btn btn-info"
+                                                value="Borrow this book"
+                                            >
+                                            </input>
+                                        </fieldset>
+                                    </form>
                                     <a  href="{% url 'library:book_reference' book.id %}"
                                         type="button"
                                         class="btn btn-info"
