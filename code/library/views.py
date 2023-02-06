@@ -1,9 +1,29 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import  render, redirect
 from .models import Book, Book_Reference
+from .forms import RegisterForm
+from django.contrib.auth import login
+from django.contrib import messages
 
 #Displays every Books references
 def index(request):
+    books = Book_Reference.objects.all()
+    return render(request, 'library/index.html', {'books': books})
+
+def register(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful." )
+            return redirect("library:home")
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    form = RegisterForm()
+    return render (request=request, template_name="register.html", context={"register_form":form})
+
+
+def books(request):
     books = Book_Reference.objects.all()
     return render(request, 'library/index.html', {'books': books})
 
