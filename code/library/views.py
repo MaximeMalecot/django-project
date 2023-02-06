@@ -1,27 +1,42 @@
 from django.http import HttpResponse
 from django.shortcuts import  render, redirect
 from .models import Book, Book_Reference
-from .forms import RegisterForm
+from .forms import RegisterUserForm, RegisterLibrarianForm
 from django.contrib.auth import login
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from .decorators import librarian_required, admin_required
 
-#Displays every Books references
 def index(request):
     books = Book_Reference.objects.all()
     return render(request, 'library/index.html', {'books': books})
 
 def register(request):
+    return render(request, 'register.html')
+
+def register_member(request):
     if request.method == "POST":
-        form = RegisterForm(request.POST)
+        form = RegisterUserForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, "Registration successful." )
             return redirect("library:home")
         messages.error(request, "Unsuccessful registration. Invalid information.")
-    form = RegisterForm()
-    return render (request=request, template_name="register.html", context={"register_form":form})
+    form = RegisterUserForm()
+    return render (request=request, template_name="register_form.html", context={"register_form":form,"role":"user"})
+
+def register_librarian(request):
+    if request.method == "POST":
+        form = RegisterLibrarianForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, "Registration successful." )
+            return redirect("library:home")
+        messages.error(request, "Unsuccessful registration. Invalid information.")
+    form = RegisterLibrarianForm()
+    return render (request=request, template_name="register_form.html", context={"register_form":form,"role":"librarian"})
 
 
 def books(request):
@@ -46,3 +61,8 @@ def borrow_book(request, book_id):
     book.stock = book.stock - 1
     book.save()
     return render(request, 'library/borrowed.html', {'book': book})
+
+@librarian_required
+def create_book(request):
+    books = Book_Reference.objects.all()
+    return render(request, 'library/index.html', {'books': books})

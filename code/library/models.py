@@ -1,4 +1,17 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+class User(AbstractUser):
+    ADMIN = 1
+    LIBRARIAN = 2
+    MEMBER = 3
+
+    ROLE_CHOICES = (
+        (ADMIN, 'admin'),
+        (LIBRARIAN, 'librarian'),
+        (MEMBER, 'member'),
+    )
+    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, default=MEMBER)
 
 class Library(models.Model):
     name = models.CharField(max_length=200)

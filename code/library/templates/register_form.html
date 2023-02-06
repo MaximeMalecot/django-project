@@ -6,9 +6,12 @@
 
 <!--Register--> 
 <div class="container py-5">
-	<h1>Register</h1>
-    <a href="{% url 'library:register_member' %}" class="btn btn-primary">Register as a Member</a>
-    <a href="{% url 'library:register_librarian' %}" class="btn btn-primary">Register as a Librarian</a>
+	<h1>Register {{role}}</h1>
+	<form method="POST">
+		{% csrf_token %}
+		{{ register_form|crispy }}                    
+		<button class="btn btn-primary" type="submit">Register</button>
+	</form>
 	<p class="text-center">If you already have an account, <a href="{% url 'login' %}">login</a> instead.</p>
 </div>
 
