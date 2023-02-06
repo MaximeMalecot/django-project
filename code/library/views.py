@@ -4,6 +4,7 @@ from .models import Book, Book_Reference
 from .forms import RegisterForm
 from django.contrib.auth import login
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 #Displays every Books references
 def index(request):
@@ -34,6 +35,7 @@ def book_reference(request, book_id):
     availabilities = Book.objects.filter(reference=book, stock__gt=0)
     return render(request, 'library/book.html', {'book': book, 'availabilities': availabilities})
 
+@login_required
 def borrow_book(request, book_id):
     book = Book.objects.get(pk=book_id)
     if book is None:
