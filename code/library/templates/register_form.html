@@ -1,14 +1,5 @@
 {% extends "default_form.html" %}
 
-{% load crispy_forms_tags %}    
-
 {% block formTitle %}Register as a {{role}}{% endblock %}
-
-{% block form %}
-<form method="POST">
-	{% csrf_token %}
-	{{ register_form|crispy }}                    
-	<button class="btn btn-primary" type="submit">Register</button>
-</form>
-<p class="text-center">If you already have an account, <a href="{% url 'login' %}">login</a> instead.</p>
-{% endblock %}
+{% block btn %}Register{% endblock %}
+{% block text %}<p class="text-center">If you already have an account, <a href="{% url 'login' %}">login</a> instead.</p>{% endblock %}

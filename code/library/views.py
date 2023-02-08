@@ -26,7 +26,7 @@ def register_member(request):
             return redirect("library:home")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = RegisterUserForm()
-    return render (request=request, template_name="register_form.html", context={"register_form":form,"role":"member"})
+    return render (request=request, template_name="register_form.html", context={"form":form,"role":"member"})
 
 def register_librarian(request):
     if request.method == "POST":
@@ -38,7 +38,7 @@ def register_librarian(request):
             return redirect("library:home")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = RegisterLibrarianForm()
-    return render (request=request, template_name="register_form.html", context={"register_form":form,"role":"librarian"})
+    return render (request=request, template_name="register_form.html", context={"form":form,"role":"librarian"})
 
 # Books views
 

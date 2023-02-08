@@ -12,6 +12,6 @@ urlpatterns = [
     path('books/create', views.create_book, name="create_book"),
     path('books/<int:book_id>/', views.book_reference, name='book_reference'),
     path('books/<int:book_id>/borrow/', views.borrow_book, name='borrow_book'),
-    path('book_reference/create', views.create_book_reference, name='create_book_reference'),
-    path('book_reference/<int:book_reference_id>/edit', views.edit_book_reference, name='edit_book_reference'),
+    path('book_references/create', views.create_book_reference, name='create_book_reference'),
+    path('book_references/<int:book_reference_id>/edit', views.edit_book_reference, name='edit_book_reference'),
 ]
