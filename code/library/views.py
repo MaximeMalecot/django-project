@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import  render, redirect
 from .models import Book, Book_Reference
-from .forms import RegisterUserForm, RegisterLibrarianForm, CreateBookReferenceForm
+from .forms import RegisterUserForm, RegisterLibrarianForm, BookReferenceForm, BookForm, BookEditForm
 from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -73,25 +73,52 @@ def create_book(request):
 @librarian_required
 def create_book_reference(request):
     if request.method == "POST":
-        form = CreateBookReferenceForm(request.POST)
+        form = BookReferenceForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, "Book reference created." )
             return redirect("library:home")
         messages.error(request, "Invalid form.")
-    form = CreateBookReferenceForm()
+    form = BookReferenceForm()
     return render (request=request, template_name="library/book_reference_form.html", context={"form":form,"type":"create"})
 
 @librarian_required
 def edit_book_reference(request, book_reference_id):
     instance = Book_Reference.objects.get(pk=book_reference_id)
     if request.method == "POST":
-        form = CreateBookReferenceForm(request.POST, instance=instance)
+        form = BookReferenceForm(request.POST, instance=instance)
         if form.is_valid():
             form.save()
             messages.success(request, "Book reference edited." )
             return redirect("library:home")
         messages.error(request, "Invalid form.")
-    form = CreateBookReferenceForm(instance=instance)
+    form = BookReferenceForm(instance=instance)
     return render (request=request, template_name="library/book_reference_form.html", context={"form":form,"type":"edit","book":instance})
+
+@librarian_required
+def create_book(request):
+    if request.method == "POST":
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form = form.save(commit=False)
+            form.library = request.user.library
+            form.save()
+            messages.success(request, "Book created." )
+            return redirect("library:home")
+        messages.error(request, "Invalid form.")
+    form = BookForm()
+    return render (request=request, template_name="library/book_form.html", context={"form":form,"type":"create"})
+
+@librarian_required
+def edit_book(request, book_id):
+    instance = Book.objects.get(pk=book_id)
+    if request.method == "POST":
+        form = BookEditForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Book edited." )
+            return redirect("library:home")
+        messages.error(request, "Invalid form.")
+    form = BookEditForm(instance=instance)
+    return render (request=request, template_name="library/book_form.html", context={"form":form,"type":"edit","book":instance})
 

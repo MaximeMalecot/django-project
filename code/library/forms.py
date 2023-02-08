@@ -32,7 +32,7 @@ class RegisterLibrarianForm(UserCreationForm):
         return user
     
     
-class CreateBookReferenceForm(forms.ModelForm):
+class BookReferenceForm(forms.ModelForm):
     genre = forms.ModelMultipleChoiceField(
         queryset=Genre.objects.all()
     )
@@ -42,11 +42,44 @@ class CreateBookReferenceForm(forms.ModelForm):
         fields = ('title', 'author', 'year', 'edition', 'collection', 'synopsis', 'genre')
     
     def __init__(self, *args, **kwargs):
-        super(CreateBookReferenceForm, self).__init__(*args, **kwargs)
+        super(BookReferenceForm, self).__init__(*args, **kwargs)
         self.fields['genre'].required = False
     
     def save(self, commit=True):
-        instance = super(CreateBookReferenceForm, self).save(commit=False)
+        instance = super(BookReferenceForm, self).save(commit=False)
+        if commit:
+            instance.save()
+        return instance
+
+class BookForm(forms.ModelForm):
+    reference = forms.ModelChoiceField(
+        queryset=Book_Reference.objects.all()
+    )
+    stock = forms.IntegerField()
+    
+    class Meta:
+        model = Book
+        fields = ('reference', 'stock')
+        
+    def save(self, commit=True):
+        instance = super(BookForm, self).save(commit=False)
+        if commit:
+            instance.save()
+        return instance
+    
+class BookEditForm(forms.ModelForm):
+    reference = forms.ModelChoiceField(
+        queryset=Book_Reference.objects.all(),
+        disabled=True
+    )
+    stock = forms.IntegerField()
+    
+    class Meta:
+        model = Book
+        fields = ('reference', 'stock')
+        
+    def save(self, commit=True):
+        instance = super(BookEditForm, self).save(commit=False)
         if commit:
             instance.save()
         return instance
