@@ -1,0 +1,12 @@
+{% extends "default_form.html" %}
+
+{% block title %}
+    {% block formTitle %}
+        {% if type == "create" %}
+            Create a new genre
+        {% else %}
+            Edit {{genre}}
+        {% endif %}
+    {% endblock %}
+{% endblock %}
+{% block btn %}Save{% endblock %}

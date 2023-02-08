@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import  render, redirect
-from .models import Book, Book_Reference
-from .forms import RegisterUserForm, RegisterLibrarianForm, BookReferenceForm, BookForm, BookEditForm
+from .models import Book, Book_Reference, Genre
+from .forms import RegisterUserForm, RegisterLibrarianForm, BookReferenceForm, BookForm, BookEditForm, GenreForm
 from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -26,7 +26,7 @@ def register_member(request):
             return redirect("library:home")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = RegisterUserForm()
-    return render (request=request, template_name="register_form.html", context={"form":form,"role":"member"})
+    return render (request=request, template_name="library/forms/register_form.html", context={"form":form,"role":"member"})
 
 def register_librarian(request):
     if request.method == "POST":
@@ -38,7 +38,7 @@ def register_librarian(request):
             return redirect("library:home")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = RegisterLibrarianForm()
-    return render (request=request, template_name="register_form.html", context={"form":form,"role":"librarian"})
+    return render (request=request, template_name="library/forms/register_form.html", context={"form":form,"role":"librarian"})
 
 # Books views
 
@@ -80,7 +80,7 @@ def create_book_reference(request):
             return redirect("library:home")
         messages.error(request, "Invalid form.")
     form = BookReferenceForm()
-    return render (request=request, template_name="library/book_reference_form.html", context={"form":form,"type":"create"})
+    return render (request=request, template_name="library/forms/book_reference_form.html", context={"form":form,"type":"create"})
 
 @librarian_required
 def edit_book_reference(request, book_reference_id):
@@ -93,7 +93,7 @@ def edit_book_reference(request, book_reference_id):
             return redirect("library:home")
         messages.error(request, "Invalid form.")
     form = BookReferenceForm(instance=instance)
-    return render (request=request, template_name="library/book_reference_form.html", context={"form":form,"type":"edit","book":instance})
+    return render (request=request, template_name="library/forms/book_reference_form.html", context={"form":form,"type":"edit","book":instance})
 
 @librarian_required
 def create_book(request):
@@ -107,7 +107,7 @@ def create_book(request):
             return redirect("library:home")
         messages.error(request, "Invalid form.")
     form = BookForm()
-    return render (request=request, template_name="library/book_form.html", context={"form":form,"type":"create"})
+    return render (request=request, template_name="library/forms/book_form.html", context={"form":form,"type":"create"})
 
 @librarian_required
 def edit_book(request, book_id):
@@ -120,5 +120,34 @@ def edit_book(request, book_id):
             return redirect("library:home")
         messages.error(request, "Invalid form.")
     form = BookEditForm(instance=instance)
-    return render (request=request, template_name="library/book_form.html", context={"form":form,"type":"edit","book":instance})
+    return render (request=request, template_name="library/forms/book_form.html", context={"form":form,"type":"edit","book":instance})
 
+@librarian_required
+def genre(request):
+    genres = Genre.objects.all()
+    return render(request, 'library/genre.html', {'genre': genres})
+    
+@librarian_required
+def create_genre(request):
+    if request.method == "POST":
+        form = GenreForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Genre created." )
+            return redirect("library:home")
+        messages.error(request, "Invalid form.")
+    form = GenreForm()
+    return render (request=request, template_name="library/forms/genre_form.html", context={"form":form,"type":"create"})
+
+@librarian_required
+def edit_genre(request, genre_id):
+    instance = Genre.objects.get(pk=genre_id)
+    if request.method == "POST":
+        form = GenreForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Genre edited." )
+            return redirect("library:home")
+        messages.error(request, "Invalid form.")
+    form = GenreForm(instance=instance)
+    return render (request=request, template_name="library/forms/genre_form.html", context={"form":form,"type":"edit","genre":instance})

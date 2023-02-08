@@ -83,3 +83,14 @@ class BookEditForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+    
+class GenreForm(forms.ModelForm):
+    class Meta:
+        model = Genre
+        fields = ('name', 'description')
+        
+    def save(self, commit=True):
+        instance = super(GenreForm, self).save(commit=False)
+        if commit:
+            instance.save()
+        return instance
