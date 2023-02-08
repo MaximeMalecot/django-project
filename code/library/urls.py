@@ -15,7 +15,9 @@ urlpatterns = [
     path('books/<int:book_id>/borrow/', views.borrow_book, name='borrow_book'),
     path('book_references/create', views.create_book_reference, name='create_book_reference'),
     path('book_references/<int:book_reference_id>/edit', views.edit_book_reference, name='edit_book_reference'),
-    path('genres', views.genre, name='genre'),
-    path('genres/create', views.create_genre, name='create_genre'),
-    path('genres/<int:genre_id>/edit', views.edit_genre, name='edit_genre'),
+    path('genres', views.genres, name='genres'),
+    path('genres/create', views.genre_create, name='genre_create'),
+    path('genres/<int:genre_id>', views.genre_detail, name='genre_detail'),
+    path('genres/<int:genre_id>/edit', views.genre_update, name='genre_update'),
+    path('genres/<int:genre_id>/delete', views.genre_delete, name='genre_delete'),
 ]
