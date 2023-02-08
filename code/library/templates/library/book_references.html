@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Our book references</h2>
+    {% if book_references %}
+        <div class="d-inline-flex p-2" style="gap: 15px;">
+        {% for book_reference in book_references %}
+            <div>
+                <h3>Title: {{ book_reference.title }}</h3>
+                <p>Author: {{ book_reference.author }}</p>
+                <p>Year: {{ book_reference.year }}</p>
+                <p>Edition: {{ book_reference.edition }}</p>
+                <p>Collection: {{ book_reference.collection }}</p>
+                <p>Synopsis: {{ book_reference.synopsis }}</p>
+                <p>Genre: {{ book_reference.genre.name }}</p>
+                {% if user.is_authenticated %}
+                    {% if user.role >= 2 %}
+                        <a href="{% url 'library:book_reference' book_reference.id %}" type="button" class="btn btn-info">Details</a>
+                        <a href="{% url 'library:book_reference_edit' book_reference.id %}" type="button" class="btn btn-info">Update</a>
+                        <a href="{% url 'library:book_reference_delete' book_reference.id %}" type="button" class="btn btn-info">Delete</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% if user.is_authenticated %}
+        {% if user.role >= 2 %}
+            <a href="{% url 'library:book_reference_create' %}" type="button" class="btn btn-info">Create</a>
+        {% endif %}
+    {% endif %}
+</div>
+
+{% endblock content %}

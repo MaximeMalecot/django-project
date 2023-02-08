@@ -33,7 +33,7 @@ class RegisterLibrarianForm(UserCreationForm):
     
     
 class BookReferenceForm(forms.ModelForm):
-    genre = forms.ModelMultipleChoiceField(
+    genre = forms.ModelChoiceField(
         queryset=Genre.objects.all()
     )
     
@@ -41,9 +41,6 @@ class BookReferenceForm(forms.ModelForm):
         model = Book_Reference
         fields = ('title', 'author', 'year', 'edition', 'collection', 'synopsis', 'genre')
     
-    def __init__(self, *args, **kwargs):
-        super(BookReferenceForm, self).__init__(*args, **kwargs)
-        self.fields['genre'].required = False
     
     def save(self, commit=True):
         instance = super(BookReferenceForm, self).save(commit=False)

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Book reference {{book_reference.title}} </h2>
+    {% if book_reference %}
+        <div>
+            <h3>Title: {{ book_reference.title }}</h3>
+            <p>Author: {{ book_reference.author }}</p>
+            <p>Year: {{ book_reference.year }}</p>
+            <p>Edition: {{ book_reference.edition }}</p>
+            <p>Collection: {{ book_reference.collection }}</p>
+            <p>Synopsis: {{ book_reference.synopsis }}</p>
+            <p>Genre: {{ book_reference.genre.name }}</p>
+            {% if user.is_authenticated %}
+                {% if user.role >= 2 %}
+                    <a href="{% url 'library:book_reference_edit' book_reference.id %}" type="button" class="btn btn-info">Update</a>
+                    <a href="{% url 'library:book_reference_delete' book_reference.id %}" type="button" class="btn btn-info">Delete</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+{% endblock content %}

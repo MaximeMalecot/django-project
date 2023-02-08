@@ -38,7 +38,7 @@ class Book_Reference(models.Model):
     edition = models.CharField(max_length=200)
     collection = models.CharField(max_length=200)
     synopsis = models.TextField()
-    genre = models.ManyToManyField(Genre)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, blank=True, null=True)
     def __str__(self):
         return f"'{self.title}' by {self.author} ({self.year})"
 

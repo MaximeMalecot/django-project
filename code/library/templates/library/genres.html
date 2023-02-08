@@ -8,7 +8,12 @@
                     <div>
                         <h3>{{ genre.name }}</h3>
                         <p>{{ genre.description }}</p>
-                        <a href="{% url 'library:genre_detail' genre.id %}" type="button" class="btn btn-info">See more</a>
+                        {% if user.is_authenticated %}
+                            {% if user.role >= 2 %}
+                                <a href="{% url 'library:genre_update' genre.id %}" type="button" class="btn btn-info">Update</a>
+                                <a href="{% url 'library:genre_delete' genre.id %}" type="button" class="btn btn-info">Delete</a>
+                            {% endif %}
+                        {% endif %}
                     </div>
             {% endfor %}
         </div>

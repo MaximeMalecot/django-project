@@ -67,36 +67,6 @@ def borrow_book(request, book_id):
 
 @librarian_required
 def create_book(request):
-    books = Book_Reference.objects.all()
-    return render(request, 'library/index.html', {'books': books})
-
-@librarian_required
-def create_book_reference(request):
-    if request.method == "POST":
-        form = BookReferenceForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Book reference created." )
-            return redirect("library:home")
-        messages.error(request, "Invalid form.")
-    form = BookReferenceForm()
-    return render (request=request, template_name="library/forms/book_reference_form.html", context={"form":form,"type":"create"})
-
-@librarian_required
-def edit_book_reference(request, book_reference_id):
-    instance = Book_Reference.objects.get(pk=book_reference_id)
-    if request.method == "POST":
-        form = BookReferenceForm(request.POST, instance=instance)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Book reference edited." )
-            return redirect("library:home")
-        messages.error(request, "Invalid form.")
-    form = BookReferenceForm(instance=instance)
-    return render (request=request, template_name="library/forms/book_reference_form.html", context={"form":form,"type":"edit","book":instance})
-
-@librarian_required
-def create_book(request):
     if request.method == "POST":
         form = BookForm(request.POST)
         if form.is_valid():
@@ -122,17 +92,57 @@ def edit_book(request, book_id):
     form = BookEditForm(instance=instance)
     return render (request=request, template_name="library/forms/book_form.html", context={"form":form,"type":"edit","book":instance})
 
+##### BOOK REFERENCES
+
+def book_references(request):
+    book_references = Book_Reference.objects.all()
+    return render(request, 'library/book_references.html', {'book_references': book_references})
+
+def book_reference(request, book_reference_id):
+    book_reference = Book_Reference.objects.get(pk=book_reference_id)
+    if book_reference is None:
+        raise Http404("Book reference does not exist")
+    return render(request, 'library/book_reference.html', {'book_reference': book_reference})
+
 @librarian_required
+def book_reference_create(request):
+    if request.method == "POST":
+        form = BookReferenceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Book reference created." )
+            return redirect("library:book_references")
+        messages.error(request, "Invalid form.")
+    form = BookReferenceForm()
+    return render (request=request, template_name="library/forms/book_reference_form.html", context={"form":form,"type":"create"})
+
+@librarian_required
+def book_reference_edit(request, book_reference_id):
+    instance = Book_Reference.objects.get(pk=book_reference_id)
+    if request.method == "POST":
+        form = BookReferenceForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Book reference edited." )
+            return redirect("library:book_references")
+        messages.error(request, "Invalid form.")
+    form = BookReferenceForm(instance=instance)
+    return render (request=request, template_name="library/forms/book_reference_form.html", context={"form":form,"type":"edit","book":instance})
+
+@librarian_required
+def book_reference_delete(request, book_reference_id):
+    book_reference = Book_Reference.objects.get(pk=book_reference_id)
+    if book_reference is None:
+        raise Http404("Book reference does not exist")
+    book_reference.delete()
+    messages.success(request, "Book reference deleted." )
+    return redirect("library:book_references")
+
+##### GENRES
+
 def genres(request):
     genres = Genre.objects.all()
     return render(request, 'library/genres.html', {'genres': genres})
-
-def genre_detail(request, genre_id):
-    genre = Genre.objects.get(pk=genre_id)
-    if genre is None:
-        raise Http404("Genre does not exist")
-    books = Book_Reference.objects.filter(genre=genre)
-    return render(request, 'library/genre_detail.html', {'genre': genre, 'books': books})
     
 @librarian_required
 def genre_create(request):
@@ -154,7 +164,7 @@ def genre_update(request, genre_id):
         if form.is_valid():
             form.save()
             messages.success(request, "Genre edited." )
-            return redirect("library:genre_detail", genre_id=genre_id)
+            return redirect("library:genres")
         messages.error(request, "Invalid form.")
     form = GenreForm(instance=instance)
     return render (request=request, template_name="library/forms/genre_form.html", context={"form":form,"type":"edit","genre":instance})
