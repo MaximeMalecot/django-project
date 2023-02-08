@@ -1,11 +1,13 @@
 from django.http import HttpResponse
 from django.shortcuts import  render, redirect
 from .models import Book, Book_Reference
-from .forms import RegisterUserForm, RegisterLibrarianForm
+from .forms import RegisterUserForm, RegisterLibrarianForm, CreateBookReferenceForm
 from django.contrib.auth import login
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from .decorators import librarian_required, admin_required
+
+# Default views
 
 def index(request):
     books = Book_Reference.objects.all()
@@ -24,7 +26,7 @@ def register_member(request):
             return redirect("library:home")
         messages.error(request, "Unsuccessful registration. Invalid information.")
     form = RegisterUserForm()
-    return render (request=request, template_name="register_form.html", context={"register_form":form,"role":"user"})
+    return render (request=request, template_name="register_form.html", context={"register_form":form,"role":"member"})
 
 def register_librarian(request):
     if request.method == "POST":
@@ -38,6 +40,7 @@ def register_librarian(request):
     form = RegisterLibrarianForm()
     return render (request=request, template_name="register_form.html", context={"register_form":form,"role":"librarian"})
 
+# Books views
 
 def books(request):
     books = Book_Reference.objects.all()
@@ -66,3 +69,29 @@ def borrow_book(request, book_id):
 def create_book(request):
     books = Book_Reference.objects.all()
     return render(request, 'library/index.html', {'books': books})
+
+@librarian_required
+def create_book_reference(request):
+    if request.method == "POST":
+        form = CreateBookReferenceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Book reference created." )
+            return redirect("library:home")
+        messages.error(request, "Invalid form.")
+    form = CreateBookReferenceForm()
+    return render (request=request, template_name="library/book_reference_form.html", context={"form":form,"type":"create"})
+
+@librarian_required
+def edit_book_reference(request, book_reference_id):
+    instance = Book_Reference.objects.get(pk=book_reference_id)
+    if request.method == "POST":
+        form = CreateBookReferenceForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Book reference edited." )
+            return redirect("library:home")
+        messages.error(request, "Invalid form.")
+    form = CreateBookReferenceForm(instance=instance)
+    return render (request=request, template_name="library/book_reference_form.html", context={"form":form,"type":"edit","book":instance})
+
