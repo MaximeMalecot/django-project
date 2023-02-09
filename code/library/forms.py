@@ -34,7 +34,8 @@ class RegisterLibrarianForm(UserCreationForm):
     
 class BookReferenceForm(forms.ModelForm):
     genre = forms.ModelChoiceField(
-        queryset=Genre.objects.all()
+        queryset=Genre.objects.all(),
+        required=False
     )
     
     class Meta:
@@ -96,11 +97,6 @@ class BookAddByRefForm(forms.ModelForm):
     class Meta:
         model = Book
         fields= ('reference', 'stock', 'library')
-        
-    # def __init__(self, *args, **kwargs):
-    #     self.reference = kwargs.pop('reference', None)
-    #     self.library = kwargs.pop('library', None)
-    #     super(BookAddByRefForm, self).__init__(*args, **kwargs)
         
     def save(self, commit=True):
         instance = super(BookAddByRefForm, self).save(commit=False)

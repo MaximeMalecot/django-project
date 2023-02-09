@@ -12,13 +12,20 @@ import datetime
 # Default views
 
 def index(request):
-    books = Book_Reference.objects.all()
+    search = None
+    if request.method == "POST":
+        if request.POST.get('search') != "":
+            search = request.POST.get('search')
+    if search is not None:
+        books = Book_Reference.objects.filter(title__icontains=search)
+    else :
+        books = Book_Reference.objects.all()
     if request.user.is_authenticated:
         if request.user.role == User.MEMBER:
             return render(request, 'library/index_member.html', {'books': books})
         if request.user.role == User.LIBRARIAN:
-            return render(request, 'library/index_librarian.html')
-    return render(request, 'library/index.html', {'books': books})
+            return render(request, 'library/index_librarian.html', {'books': books})
+    return render(request, 'library/books.html', {'books': books})
 
 def register(request):
     return render(request, 'register.html')
@@ -48,10 +55,6 @@ def register_librarian(request):
     return render (request=request, template_name="library/forms/register_form.html", context={"form":form,"role":"librarian"})
 
 ##### BOOKS
-
-def books(request):
-    books = Book_Reference.objects.all()
-    return render(request, 'library/index.html', {'books': books})
 
 def books_by_ref(request, ref_id):
     book = Book_Reference.objects.get(pk=ref_id)
