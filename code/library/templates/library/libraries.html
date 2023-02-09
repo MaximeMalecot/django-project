@@ -11,7 +11,7 @@
                         <p>{{ library.address }}</p>
                         <p>{{library.city}}</p>
                         <p>{{library.zipcode}}</p>
-                        <a href="{% url 'library:library' library.id %}">See books</a>
+                        <a href="{% url 'library:library' library.id %}" type="button" class="btn btn-info">See books</a>
                     </div>
             {% endfor %}
         </div>

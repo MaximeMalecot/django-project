@@ -6,29 +6,34 @@
     {% if books %}
         <div class="d-inline-flex p-2" style="gap: 15px;">
             {% for book in books %}
-                    <div>
-                        <h3>Title: {{ book.reference.title }}</h3>
-                        <p>Author: {{ book.reference.author }}</p>
-                        <p>Year: {{ book.reference.year }}</p>
-                        <p>Edition: {{ book.reference.edition}}</p>
-                        <p>Collection: {{ book.reference.collection }}</p>
-                        <p>Synopsis: {{ book.reference.synopsis }}</p>
-                        <p>Genre: {{ book.reference.genre }}</p>
-                        <p>Availability: {{book.stock}}</p>
-                        <form action="{% url 'library:borrow_book' book.id %}" method="post">
-                            {% csrf_token %}
-                            <fieldset>
-                                <input
-                                    type="submit"
-                                    class="btn btn-info"
-                                    value="Borrow this book"
-                                >
-                                </input>
-                            </fieldset>
-                        </form>
+                <div class="book-item d-flex flex-column" style="cursor: pointer; border: 1px solid gray; border-radius: 5px; padding: 10px;">
+                    <div class="d-flex justify-content-center" style="width: 100%;">
+                        <div class="book-cover" style="height: 140px; width: 99px; overflow: hidden; border-radius: 8px;">
+                            <div style="height: 100%; width: 100%; background-color: gray;"></div>
+                        </div>
                     </div>
+                    <h3>Title: {{ book.reference.title }}</h3>
+                    <p>Author: {{ book.reference.author }}</p>
+                    <p>Year: {{ book.reference.year }}</p>
+                    <p>Edition: {{ book.reference.edition}}</p>
+                    <p>Collection: {{ book.reference.collection }}</p>
+                    <p>Synopsis: {{ book.reference.synopsis }}</p>
+                    <p>Genre: {{ book.reference.genre }}</p>
+                    <p>Availability: x{{book.stock}}</p>
+                    <form action="{% url 'library:borrow_book' book.id %}" method="post">
+                        {% csrf_token %}
+                        <fieldset>
+                            <input
+                                type="submit"
+                                class="btn btn-info"
+                                value="Borrow this book"
+                            >
+                            </input>
+                        </fieldset>
+                    </form>
+                </div>
             {% endfor %}
-        </div>
+        </div> 
     {% else %}
         <p>No libraries are available.</p>
     {% endif %} 

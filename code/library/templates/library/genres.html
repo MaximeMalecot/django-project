@@ -9,6 +9,7 @@
                     <div>
                         <h3>{{ genre.name }}</h3>
                         <p>{{ genre.description }}</p>
+                        <a href="{% url 'library:genre_books' genre.id %}" type="button" class="btn btn-info">See books</a>
                         {% if user.is_authenticated %}
                             {% if user.role >= 2 %}
                                 <a href="{% url 'library:genre_update' genre.id %}" type="button" class="btn btn-info">Update</a>

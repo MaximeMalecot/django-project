@@ -62,6 +62,10 @@ def books_by_library_by_ref(request, library_id, ref_id):
     book = Book.objects.get(reference=ref_id, library=library_id)
     return render(request, 'library/book_in_library.html', {'book': book})
 
+def books_by_genre(request, genre_id):
+    books = Book_Reference.objects.filter(genre=genre_id)
+    return render(request, 'library/index.html', {'books': books})
+
 @login_required
 def borrow_book(request, book_id):
     book = Book.objects.get(pk=book_id)

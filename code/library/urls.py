@@ -27,6 +27,7 @@ urlpatterns = [
     path('genres/create', views.genre_create, name='genre_create'),
     path('genres/<int:genre_id>/edit', views.genre_update, name='genre_update'),
     path('genres/<int:genre_id>/delete', views.genre_delete, name='genre_delete'),
+    path('genres/<int:genre_id>', views.books_by_genre, name='genre_books'),
     
     #### LIBRARY
     path('libraries', views.libraries, name='libraries'),
