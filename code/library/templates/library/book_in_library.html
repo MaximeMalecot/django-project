@@ -17,9 +17,9 @@
             <p>{{ book.reference.synopsis }}</p>
             {% if user.is_authenticated %}
                 {% if user.role >= 2 %}
-                    <a href="{% url 'library:book_reference_edit' book.id %}" type="button" class="btn btn-info">Update</a>
+                    <a href="{% url 'library:book_edit' book.id %}" type="button" class="btn btn-info">Update</a>
                     {% if availabilities|length == 0 %}
-                        <a href="{% url 'library:book_reference_delete' book.id %}" type="button" class="btn btn-info">Delete</a>
+                        <a href="{% url 'library:book_delete' book.id %}" type="button" class="btn btn-info">Delete</a>
                     {% endif %}
                 {% endif %}
             {% endif %}

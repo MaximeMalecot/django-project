@@ -20,6 +20,12 @@
                     <p>Synopsis: {{ book.reference.synopsis }}</p>
                     <p>Genre: {{ book.reference.genre }}</p>
                     <p>Availability: x{{book.stock}}</p>
+                    <a  href="{% url 'library:books_by_library_by_ref' book.library.id book.reference.id%}"
+                                        type="button"
+                                        class="btn btn-info"
+                    >
+                        See this book in this library
+                    </a>
                     <form action="{% url 'library:borrow_book' book.id %}" method="post">
                         {% csrf_token %}
                         <fieldset>
@@ -35,7 +41,7 @@
             {% endfor %}
         </div> 
     {% else %}
-        <p>No libraries are available.</p>
+        <p>No books are available.</p>
     {% endif %} 
 </div>
 

@@ -81,6 +81,33 @@ class BookEditForm(forms.ModelForm):
             instance.save()
         return instance
     
+class BookAddByRefForm(forms.ModelForm):
+    reference = forms.ModelChoiceField(
+        queryset=Book_Reference.objects.all(),
+        required=False,
+        disabled=True
+    )
+    library = forms.ModelChoiceField(
+        queryset=Library.objects.all(),
+        required=False,
+        disabled=True
+    )
+    stock = forms.IntegerField()
+    class Meta:
+        model = Book
+        fields= ('reference', 'stock', 'library')
+        
+    # def __init__(self, *args, **kwargs):
+    #     self.reference = kwargs.pop('reference', None)
+    #     self.library = kwargs.pop('library', None)
+    #     super(BookAddByRefForm, self).__init__(*args, **kwargs)
+        
+    def save(self, commit=True):
+        instance = super(BookAddByRefForm, self).save(commit=False)
+        if commit:
+            instance.save()
+        return instance
+    
 class GenreForm(forms.ModelForm):
     class Meta:
         model = Genre

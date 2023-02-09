@@ -20,6 +20,9 @@
                     {% if availabilities|length == 0 %}
                         <a href="{% url 'library:book_reference_delete' book.id %}" type="button" class="btn btn-info">Delete</a>
                     {% endif %}
+                    {% if add_book and add_book == True  %}
+                        <a href="{% url 'library:book_reference_add_book' book.id %}" type="button" class="btn btn-info">Add this book to your library</a>
+                    {% endif %}
                 {% endif %}
             {% endif %}
         </div>

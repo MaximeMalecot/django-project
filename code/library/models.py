@@ -11,7 +11,7 @@ class Library(models.Model):
         return "{self.name} - {self.city}".format(self=self)
     
 class User(AbstractUser):
-    library = models.ForeignKey(Library, on_delete=models.CASCADE, blank=True, null=True)
+    library = models.ForeignKey(Library, on_delete=models.SET_NULL, blank=True, null=True)
     
     ADMIN = 1
     LIBRARIAN = 2
@@ -38,7 +38,7 @@ class Book_Reference(models.Model):
     edition = models.CharField(max_length=200)
     collection = models.CharField(max_length=200)
     synopsis = models.TextField()
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, blank=True, null=True)
+    genre = models.ForeignKey(Genre, on_delete=models.SET_NULL, blank=True, null=True)
     def __str__(self):
         return f"'{self.title}' by {self.author} ({self.year})"
 
@@ -53,7 +53,7 @@ class Topic(models.Model):
     title = models.CharField(max_length=200)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
-    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True)
     def __str__(self):
         return self.title
 

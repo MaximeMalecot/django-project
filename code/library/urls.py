@@ -20,6 +20,7 @@ urlpatterns = [
     #### BOOK REFERENCES
     path('book_references', views.book_references, name='book_references'),
     path('book_references/create', views.book_reference_create, name='book_reference_create'),
+    path('book_references/<int:book_reference_id>/add', views.book_reference_add_book, name='book_reference_add_book'),
     path('book_references/<int:book_reference_id>/edit', views.book_reference_edit, name='book_reference_edit'),
     path('book_references/<int:book_reference_id>/delete', views.book_reference_delete, name='book_reference_delete'),
     #### GENRES

@@ -1,7 +1,7 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import  render, redirect
-from .models import Book, Book_Reference, Genre, User
-from .forms import RegisterUserForm, RegisterLibrarianForm, BookReferenceForm, BookForm, BookEditForm, GenreForm, Library
+from .models import Book, Book_Reference, Genre, User, Library
+from .forms import RegisterUserForm, RegisterLibrarianForm, BookReferenceForm, BookForm, BookEditForm, GenreForm, BookAddByRefForm
 from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -53,10 +53,15 @@ def books(request):
 
 def books_by_ref(request, ref_id):
     book = Book_Reference.objects.get(pk=ref_id)
+    add_book = False
+    if request.user.is_authenticated:
+        if request.user.role == User.LIBRARIAN and request.user.library is not None:
+            book_exists = Book.objects.filter(reference=ref_id, library=request.user.library).exists()
+            add_book = not book_exists
     if book is None:
         raise Http404("Book reference does not exist")
     availabilities = Book.objects.filter(reference=book, stock__gt=0)
-    return render(request, 'library/book.html', {'book': book, 'availabilities': availabilities})
+    return render(request, 'library/book.html', {'book': book, 'availabilities': availabilities, 'add_book': add_book})
 
 def books_by_library_by_ref(request, library_id, ref_id):
     book = Book.objects.get(reference=ref_id, library=library_id)
@@ -112,7 +117,7 @@ def book_delete(request, book_id):
         raise Http404("Book does not exist")
     book.delete()
     messages.success(request, "Book deleted.")
-    return redirect("library:books")
+    return redirect("library:home")
     
 ##### BOOK REFERENCES
 
@@ -131,6 +136,29 @@ def book_reference_create(request):
         messages.error(request, "Invalid form.")
     form = BookReferenceForm()
     return render (request=request, template_name="library/forms/book_reference_form.html", context={"form":form,"type":"create"})
+
+@librarian_required
+def book_reference_add_book(request, book_reference_id):
+    book_ref = Book_Reference.objects.get(pk=book_reference_id)
+    library = request.user.library
+    book_exists = Book.objects.filter(reference=book_ref, library=library).exists()
+    if book_exists == True:
+        messages.error(request, "Book already exists in your library." )
+        return redirect("library:home")
+        
+    if request.method == "POST":
+        form = BookAddByRefForm(request.POST)
+        if form.is_valid():
+            book = form.save(commit=False)
+            book.reference = book_ref
+            book.library = library
+            book.save()
+            messages.success(request, "Book created." )
+            return redirect("library:home")
+        messages.error(request, "Invalid form.")
+    form = BookAddByRefForm(initial={'reference': book_ref.id, 'library': library.id})
+    return render (request=request, template_name="library/forms/book_reference_add_form.html", context={"form":form})
+
 
 @librarian_required
 def book_reference_edit(request, book_reference_id):
