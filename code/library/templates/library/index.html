@@ -14,7 +14,7 @@
                         <h3>{{ book.title }}</h3>
                         <p>{{ book.author }} ({{ book.year }}) </p>
                         <p>{{ book.edition }} - {{ book.collection }}</p>
-                        <a href="{% url 'library:book_reference' book.id %}" type="button" class="btn btn-info">See more</a>
+                        <a href="{% url 'library:books_by_ref' book.id %}" type="button" class="btn btn-info">See more</a>
                     </div>
             {% endfor %}
         </div>

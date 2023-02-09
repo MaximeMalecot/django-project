@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="top_section">
+        <div class="top_item">
+            <h2>Library</h2>
+            <p>{{book.library.name}}</p>
+            <p>{{book.library.address}}</p>
+            <p>{{book.library.city}}</p>
+            <p>{{book.library.zip_code}}</p>
+        </div>
+        <div class="top_item">
+            <h2>Book</h2>
+            <h3>{{book.reference.title}}</h3>
+            <p>{{ book.reference.author }} ({{ book.reference.year }}) </p>
+            <p>{{ book.reference.edition }} - {{ book.reference.collection }}</p>
+            <p>{{ book.reference.synopsis }}</p>
+            {% if user.is_authenticated %}
+                {% if user.role >= 2 %}
+                    <a href="{% url 'library:book_reference_edit' book.id %}" type="button" class="btn btn-info">Update</a>
+                    {% if availabilities|length == 0 %}
+                        <a href="{% url 'library:book_reference_delete' book.id %}" type="button" class="btn btn-info">Delete</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    {% if book.stock > 0 %}
+        <a href="{% url 'library:borrow_book' book.id %}" type="button" class="btn btn-info">Borrow this book</a>
+    {% endif %}
+</div>
+    <style>
+        .top_section{
+            width: 100%;
+            display: flex;
+            gap: 50px;
+        }
+    
+        .top_item{
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+
+        }
+    </style>
+{% endblock content %}

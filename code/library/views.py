@@ -1,7 +1,7 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.shortcuts import  render, redirect
-from .models import Book, Book_Reference, Genre
-from .forms import RegisterUserForm, RegisterLibrarianForm, BookReferenceForm, BookForm, BookEditForm, GenreForm
+from .models import Book, Book_Reference, Genre, User
+from .forms import RegisterUserForm, RegisterLibrarianForm, BookReferenceForm, BookForm, BookEditForm, GenreForm, Library
 from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -11,6 +11,11 @@ from .decorators import librarian_required, admin_required
 
 def index(request):
     books = Book_Reference.objects.all()
+    if request.user.is_authenticated:
+        if request.user.role == User.MEMBER:
+            return render(request, 'library/index_member.html', {'books': books})
+        if request.user.role == User.LIBRARIAN:
+            return render(request, 'library/index_librarian.html')
     return render(request, 'library/index.html', {'books': books})
 
 def register(request):
@@ -40,18 +45,22 @@ def register_librarian(request):
     form = RegisterLibrarianForm()
     return render (request=request, template_name="library/forms/register_form.html", context={"form":form,"role":"librarian"})
 
-# Books views
+##### BOOKS
 
 def books(request):
     books = Book_Reference.objects.all()
     return render(request, 'library/index.html', {'books': books})
 
-def book_reference(request, book_id):
-    book = Book_Reference.objects.get(pk=book_id)
+def books_by_ref(request, ref_id):
+    book = Book_Reference.objects.get(pk=ref_id)
     if book is None:
         raise Http404("Book reference does not exist")
     availabilities = Book.objects.filter(reference=book, stock__gt=0)
     return render(request, 'library/book.html', {'book': book, 'availabilities': availabilities})
+
+def books_by_library_by_ref(request, library_id, ref_id):
+    book = Book.objects.get(reference=ref_id, library=library_id)
+    return render(request, 'library/book_in_library.html', {'book': book})
 
 @login_required
 def borrow_book(request, book_id):
@@ -80,7 +89,7 @@ def create_book(request):
     return render (request=request, template_name="library/forms/book_form.html", context={"form":form,"type":"create"})
 
 @librarian_required
-def edit_book(request, book_id):
+def book_edit(request, book_id):
     instance = Book.objects.get(pk=book_id)
     if request.method == "POST":
         form = BookEditForm(request.POST, instance=instance)
@@ -92,17 +101,20 @@ def edit_book(request, book_id):
     form = BookEditForm(instance=instance)
     return render (request=request, template_name="library/forms/book_form.html", context={"form":form,"type":"edit","book":instance})
 
+@librarian_required
+def book_delete(request, book_id):
+    book = Book.objects.get(pk=book_id)
+    if book is None:
+        raise Http404("Book does not exist")
+    book.delete()
+    messages.success(request, "Book deleted.")
+    return redirect("library:books")
+    
 ##### BOOK REFERENCES
 
 def book_references(request):
     book_references = Book_Reference.objects.all()
     return render(request, 'library/book_references.html', {'book_references': book_references})
-
-def book_reference(request, book_reference_id):
-    book_reference = Book_Reference.objects.get(pk=book_reference_id)
-    if book_reference is None:
-        raise Http404("Book reference does not exist")
-    return render(request, 'library/book_reference.html', {'book_reference': book_reference})
 
 @librarian_required
 def book_reference_create(request):
@@ -177,3 +189,16 @@ def genre_delete(request, genre_id):
     genre.delete()
     messages.success(request, "Genre deleted." )
     return redirect("library:genres")
+
+
+##### LIBRARIES
+def libraries(request): ### ALL LIBRARIES
+    libraries = Library.objects.all()
+    return render(request, 'library/libraries.html', {'libraries': libraries})
+
+def library(request, library_id):### ALL BOOKS FROM LIBRARY
+    library = Library.objects.get(pk=library_id)
+    books = Book.objects.filter(library=library)
+    if library is None:
+        raise Http404("Library does not exist")
+    return render(request, 'library/library.html', {'library': library,'books':books})

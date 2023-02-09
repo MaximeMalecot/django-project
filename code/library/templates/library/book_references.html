@@ -13,18 +13,20 @@
                 <p>Collection: {{ book_reference.collection }}</p>
                 <p>Synopsis: {{ book_reference.synopsis }}</p>
                 <p>Genre: {{ book_reference.genre.name }}</p>
+                <a href="{% url 'library:books_by_ref' book_reference.id %}" type="button" class="btn btn-info">Details</a>
                 {% if user.is_authenticated %}
-                    {% if user.role >= 2 %}
-                        <a href="{% url 'library:book_reference' book_reference.id %}" type="button" class="btn btn-info">Details</a>
+                    {% if user.role == 2 %}
                         <a href="{% url 'library:book_reference_edit' book_reference.id %}" type="button" class="btn btn-info">Update</a>
-                        <a href="{% url 'library:book_reference_delete' book_reference.id %}" type="button" class="btn btn-info">Delete</a>
+                        {% if book_reference.book_set.all|length == 0 %}
+                            <a href="{% url 'library:book_reference_delete' book_reference.id %}" type="button" class="btn btn-info">Delete</a>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             </div>
         {% endfor %}
     {% endif %}
     {% if user.is_authenticated %}
-        {% if user.role >= 2 %}
+        {% if user.role == 2 %}
             <a href="{% url 'library:book_reference_create' %}" type="button" class="btn btn-info">Create</a>
         {% endif %}
     {% endif %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Our libraries{% endblock title %}
+{% block content %}
+<div class="container">
+    <h2>Our libraries</h2>
+    {% if libraries %}
+        <div class="d-inline-flex p-2" style="gap: 15px;">
+            {% for library in libraries %}
+                    <div>
+                        <h3>{{ library.name }}</h3>
+                        <p>{{ library.address }}</p>
+                        <p>{{library.city}}</p>
+                        <p>{{library.zipcode}}</p>
+                        <a href="{% url 'library:library' library.id %}">See books</a>
+                    </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No libraries are available.</p>
+    {% endif %} 
+</div>
+
+{% endblock content %}

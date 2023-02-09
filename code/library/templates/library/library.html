@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Library {{library}}{% endblock title %}
+{% block content %}
+<div class="container">
+    <h2>Library {{library}}</h2>
+    {% if books %}
+        <div class="d-inline-flex p-2" style="gap: 15px;">
+            {% for book in books %}
+                    <div>
+                        <h3>Title: {{ book.reference.title }}</h3>
+                        <p>Author: {{ book.reference.author }}</p>
+                        <p>Year: {{ book.reference.year }}</p>
+                        <p>Edition: {{ book.reference.edition}}</p>
+                        <p>Collection: {{ book.reference.collection }}</p>
+                        <p>Synopsis: {{ book.reference.synopsis }}</p>
+                        <p>Genre: {{ book.reference.genre }}</p>
+                        <p>Availability: {{book.stock}}</p>
+                        <form action="{% url 'library:borrow_book' book.id %}" method="post">
+                            {% csrf_token %}
+                            <fieldset>
+                                <input
+                                    type="submit"
+                                    class="btn btn-info"
+                                    value="Borrow this book"
+                                >
+                                </input>
+                            </fieldset>
+                        </form>
+                    </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No libraries are available.</p>
+    {% endif %} 
+</div>
+
+{% endblock content %}

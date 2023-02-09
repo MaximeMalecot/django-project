@@ -14,6 +14,14 @@
             <p>{{ book.author }} ({{ book.year }}) </p>
             <p>{{ book.edition }} - {{ book.collection }}</p>
             <p>{{ book.synopsis }}</p>
+            {% if user.is_authenticated %}
+                {% if user.role >= 2 %}
+                    <a href="{% url 'library:book_reference_edit' book.id %}" type="button" class="btn btn-info">Update</a>
+                    {% if availabilities|length == 0 %}
+                        <a href="{% url 'library:book_reference_delete' book.id %}" type="button" class="btn btn-info">Delete</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
         </div>
     </div>
     <div class="">
@@ -48,11 +56,11 @@
                                             </input>
                                         </fieldset>
                                     </form>
-                                    <a  href="{% url 'library:book_reference' book.id %}"
+                                    <a  href="{% url 'library:books_by_library_by_ref' bookAvailable.library.id book.id%}"
                                         type="button"
                                         class="btn btn-info"
                                     >
-                                        Visit this library
+                                        See this book in this library
                                     </a>
                                 </td>
                             </tr>
