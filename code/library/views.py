@@ -258,8 +258,13 @@ def borrow_book(request, book_id):
     loan.save()
     return render(request, 'library/borrowed.html', {'book': book})
 
+@login_required
+def own_loans(request):
+    loans = Loan.objects.filter(borrower=request.user)
+    return render(request, 'library/loans_member.html', {'loans': loans})
+
 @librarian_required
-def loans(request):
+def loans_library(request):
     isActive = request.GET.get('isActive', None)
     if isActive != None:
         loans = Loan.objects.filter(book__library=request.user.library.id, isActive=isActive)

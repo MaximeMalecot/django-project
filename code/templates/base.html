@@ -84,10 +84,15 @@
                                 >
                             </div>
                         </li>
-                        {% if user.is_authenticated and user.role == 2 and user.library %}
+                        {% if user.is_authenticated %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'library:loans'%}">Loans</a>
+                                <a class="nav-link" href="{% url 'library:own_loans' %}">Your Loans</a>
                             </li>
+                            {% if user.role == 2 and user.library %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'library:loans_library'%}">Loans administration</a>
+                                </li>
+                            {% endif %}
                         {% endif %}
                     </ul>
                     <form class="d-flex" action="{% url 'library:home' %}" method="POST">
