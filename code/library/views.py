@@ -29,7 +29,7 @@ def index(request):
             return render(request, 'library/index_member.html', {'books': books})
         if request.user.role == User.LIBRARIAN:
             return render(request, 'library/index_librarian.html', {'books': books})
-    return render(request, 'library/books.html', {'books': books})
+    return render(request, 'library/index.html', {'books': books})
 
 def register(request):
     return render(request, 'register.html')
