@@ -1,5 +1,6 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import  render, redirect
+from django.db.models import Q
 from .models import Book, Book_Reference, Genre, User, Library, Loan
 from .forms import RegisterUserForm, RegisterLibrarianForm, BookReferenceForm, BookForm, BookEditForm, GenreForm, BookAddByRefForm
 from django.contrib.auth import login
@@ -17,7 +18,10 @@ def index(request):
         if request.POST.get('search') != "":
             search = request.POST.get('search')
     if search is not None:
-        books = Book_Reference.objects.filter(title__icontains=search)
+        filters = Q(title__icontains=search) | Q(author__icontains=search) | Q(edition__icontains=search) | Q(collection__icontains=search) | Q(genre__name__icontains=search)
+        if search.isdigit():
+            filters |= Q(year=search)
+        books = Book_Reference.objects.filter(filters)
     else :
         books = Book_Reference.objects.all()
     if request.user.is_authenticated:
