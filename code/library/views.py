@@ -1,11 +1,13 @@
 from django.http import HttpResponse, Http404
 from django.shortcuts import  render, redirect
-from .models import Book, Book_Reference, Genre, User, Library
+from .models import Book, Book_Reference, Genre, User, Library, Loan
 from .forms import RegisterUserForm, RegisterLibrarianForm, BookReferenceForm, BookForm, BookEditForm, GenreForm, BookAddByRefForm
 from django.contrib.auth import login
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from .decorators import librarian_required, admin_required
+import datetime
 
 # Default views
 
@@ -70,18 +72,6 @@ def books_by_library_by_ref(request, library_id, ref_id):
 def books_by_genre(request, genre_id):
     books = Book_Reference.objects.filter(genre=genre_id)
     return render(request, 'library/index.html', {'books': books})
-
-@login_required
-def borrow_book(request, book_id):
-    book = Book.objects.get(pk=book_id)
-    if book is None:
-        raise Http404("Book does not exist")
-    if book.stock <= 0:
-        raise Http404("Book is not available")
-        
-    book.stock = book.stock - 1
-    book.save()
-    return render(request, 'library/borrowed.html', {'book': book})
 
 @librarian_required
 def create_book(request):
@@ -234,3 +224,67 @@ def library(request, library_id):### ALL BOOKS FROM LIBRARY
     if library is None:
         raise Http404("Library does not exist")
     return render(request, 'library/library.html', {'library': library,'books':books})
+
+##### LOANS
+
+@login_required
+def own_loans(request):
+    loans = Loan.objects.get(borrower=request.user)
+    return render(request, 'library/loans.html', {'loans': loans})
+
+@login_required
+def borrow_book(request, book_id):
+    book = Book.objects.get(pk=book_id)
+    if book is None:
+        messages.error(request, "Book does not exist")
+        return redirect("library:home")
+    if book.stock <= 0:
+        messages.error(request, "Book is not available")
+        return redirect("library:home")
+    loan_exists = Loan.objects.filter(book=book, borrower=request.user, isActive=True).exists()
+    if loan_exists == True:
+        messages.error(request, "You already have loaned this book, return it before borrowing it")
+        return redirect("library:home")
+    book.stock = book.stock - 1
+    book.save()
+    loan = Loan(book=book, borrower=request.user, dueDate=timezone.now() + datetime.timedelta(days=30))
+    loan.save()
+    return render(request, 'library/borrowed.html', {'book': book})
+
+@librarian_required
+def loans(request):
+    isActive = request.GET.get('isActive', None)
+    if isActive != None:
+        loans = Loan.objects.filter(book__library=request.user.library.id, isActive=isActive)
+    else :
+        loans = Loan.objects.filter(book__library=request.user.library.id)
+    return render(request, 'library/loans.html', {'loans': loans})
+
+@librarian_required
+def user_loans(request, user_id):
+    user = User.objects.get(pk=user_id)
+    if user is None:
+        messages.error(request, "User does not exist")
+        return redirect("library:loans")
+    loans = Loan.objects.filter(book__library=request.user.library.id, borrower=user)
+    return render(request, 'library/user_loans.html', {'user': user, 'loans': loans})
+
+@librarian_required
+def return_book(request, loan_id):
+    loan = Loan.objects.get(pk=loan_id)
+    if loan is None:
+        messages.error(request, "Loan does not exist")
+        return redirect("library:loans")
+    if loan.book.library != request.user.library:
+        messages.error(request, "You can't return a book from another library")
+        return redirect("library:loans")
+    if loan.isActive == False:
+        messages.error(request, "Book is already returned")
+        return redirect("library:loans")
+    loan.isActive = False
+    loan.save()
+    book = loan.book
+    book.stock = book.stock + 1
+    book.save()
+    messages.success(request, "Book returned")
+    return redirect("library:loans")

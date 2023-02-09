@@ -70,6 +70,8 @@ class Message(models.Model):
 class Loan(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     dueDate = models.DateTimeField()
+    returnedDate = models.DateTimeField(null=True)
+    isActive = models.BooleanField(default=True)
     borrower = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     def __str__(self):

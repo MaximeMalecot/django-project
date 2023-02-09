@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Loans{% endblock %}
+{% block content %}
+<div class="container">
+    <div>
+        <h2>Loans for library {{ user.library }}</h2>
+        <a href="{% url 'library:loans' %}" type="button" class="btn btn-info">All loans</a>
+    </div>
+    {% if loans %}
+    <div>
+        <div class="d-inline-flex p-2" style="gap: 15px;">
+            {% for loan in loans %}
+                    <div class="d-flex flex-column" style="cursor: pointer; border: 1px solid gray; border-radius: 5px; padding: 10px;">
+                        <h3>{{ loan.borrower }} borrowed {{ loan.book.reference.title }} on {{ loan.createdAt }}</h3>
+                        {% if loan.isActive == True %}
+                            <p> Must return before {{ loan.dueDate}} </p>
+                            <a href="{% url 'library:return_book' loan.id %}" type="button" class="btn btn-info">Return this book</a>
+                        {% else %}
+                            <p>Returned on {{ loan.returnedDate }}</p>
+                        {% endif %}
+                    </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+        <p>No books are available.</p>
+    {% endif %} 
+</div>
+{% endblock content %}

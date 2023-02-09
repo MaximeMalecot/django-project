@@ -84,6 +84,11 @@
                                 >
                             </div>
                         </li>
+                        {% if user.is_authenticated and user.role == 2 and user.library %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'library:loans'%}">Loans</a>
+                            </li>
+                        {% endif %}
                     </ul>
                     <form class="d-flex">
                         <input

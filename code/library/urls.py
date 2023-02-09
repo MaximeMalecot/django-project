@@ -33,4 +33,9 @@ urlpatterns = [
     #### LIBRARY
     path('libraries', views.libraries, name='libraries'),
     path('libraries/<int:library_id>', views.library, name='library'), ### AFFICHE LES LIVRES D'UNE BIBLIOTHEQUE
+
+    #### LOANS
+    path('loans', views.loans, name='loans'),
+    path('loans/<int:user_id>', views.user_loans, name='user_loans'),
+    path('loans/<int:loan_id>/return', views.return_book, name='return_book'),
 ]
